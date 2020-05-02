@@ -17,15 +17,19 @@ development environment::
   $ git clone https://github.com/foosel/OctoPrint
   [...]
   $ cd OctoPrint
-  $ virtualenv venv
+  $ virtualenv octoenv
+  Or in Python 3.3 onwards:
+  $ python -m venv octoenv
   [...]
   $ source venv/bin/activate
-  (venv) $ pip install -e .[develop,plugins]
+  (octoenv) $ pip install -e .[develop,plugins]
   [...]
-  (venv) $ octoprint --help
+  (octoenv) $ octoprint --help
   Usage: octoprint [OPTIONS] COMMAND [ARGS]...
 
   [...]
+
+On Windows, you may see an error compiling ``netifaces``, one of the required dependencies. The fastest way to fix this before trying again is to download a pre-compiled wheel for your version of Python from https://www.lfd.uci.edu/~gohlke/pythonlibs/#netifaces and installing using ``pip install netifaces.whl``
 
 .. note::
 
@@ -67,7 +71,7 @@ We'll start at the most basic form a plugin can take - just a few simple lines o
 
 Saving this as ``helloworld.py`` in ``~/.octoprint/plugins`` yields you something resembling these log entries upon server startup::
 
-   (venv) $ octoprint serve
+   (octoenv) $ octoprint serve
    2015-01-27 11:14:35,124 - octoprint.server - INFO - Starting OctoPrint 1.2.0-dev-448-gd96e56e (devel branch)
    [...]
    2015-01-27 11:14:35,124 - octoprint.plugin.core - INFO - Loading plugins from /home/pi/.octoprint/plugins, /home/pi/OctoPrint/src/octoprint/plugins and installed plugin packages...
@@ -150,12 +154,12 @@ So let's begin. We'll use the `cookiecutter <https://github.com/audreyr/cookiecu
 here. This should already be installed if you used the ``plugins`` extra while installing OctoPrint.  However,
 you may install it with::
 
-   (venv) $ pip install "cookiecutter>=1.4,<1.7"
+   (octoenv) $ pip install "cookiecutter>=1.4,<1.7"
 
 Then we can use the ``octoprint dev plugin:new`` command [#f1]_ to generate a new OctoPrint plugin skeleton for us::
 
-   (venv) $ cd ~/devel
-   (venv) $ octoprint dev plugin:new helloworld
+   (octoenv) $ cd ~/devel
+   (octoenv) $ octoprint dev plugin:new helloworld
    Cloning into 'cookiecutter-octoprint-plugin'...
    remote: Counting objects: 101, done.
    remote: Total 101 (delta 0), reused 0 (delta 0), pack-reused 101
@@ -173,7 +177,7 @@ Then we can use the ``octoprint dev plugin:new`` command [#f1]_ to generate a ne
    plugin_homepage [https://github.com/yourGithubName/OctoPrint-Helloworld]:
    plugin_source [https://github.com/yourGithubName/OctoPrint-Helloworld]:
    plugin_installurl [https://github.com/yourGithubName/OctoPrint-Helloworld/archive/master.zip]:
-   (venv) $ cd OctoPrint-HelloWorld
+   (octoenv) $ cd OctoPrint-HelloWorld
 
 .. note::
 
@@ -244,18 +248,19 @@ configuration parameters for you:
 Now all that's left to do is to move our ``helloworld.py`` into the ``octoprint_helloworld`` folder and renaming it to
 ``__init__.py``. Make sure to delete the copy under ``~/.octoprint/plugins`` in the process, including the ``.pyc`` file!
 
-The plugin is now ready to be installed via ``python setup.py install``. However, since we are still
-working on our plugin, it makes more sense to use ``python setup.py develop`` for now -- this way the plugin becomes
-discoverable by OctoPrint, however we don't have to reinstall it after any changes we will still do. We can have the
-``octoprint dev plugin:install`` command do everything for us here, it will ensure to use the python binary belonging
+The plugin is now ready to be installed. For a proper install, we could use ``python setup.py install``, but during development ``python setup.py develop`` is better as we don't have to reinstall after every change. This is handled for us using the
+``octoprint dev plugin:install`` command; it will ensure to use the python binary belonging
 to your OctoPrint installation::
 
-   (venv) $ octoprint dev plugin:install
+   cd OctoPrint-HelloWorld
+   (octoenv) $ octoprint dev plugin:install
    running develop
    running egg_info
    creating OctoPrint_HelloWorld.egg-info
    [...]
    Finished processing dependencies for OctoPrint-HelloWorld==1.0.0
+
+If you see any errors stating ``package 'wheel' is not installed``, just install it with ``pip install wheel`` and try again.
 
 Restart OctoPrint. Your plugin should still be properly discovered and the log line should be printed::
 
@@ -351,7 +356,7 @@ overrides.
 Following the README of the `Plugin Skeleton <https://github.com/OctoPrint/OctoPrint-PluginSkeleton>`_ you could now
 already publish your plugin on Github and it would be directly installable by others using pip::
 
-   (venv) $ pip install https://github.com/yourGithubName/OctoPrint-HelloWorld/archive/master.zip
+   (octoenv) $ pip install https://github.com/yourGithubName/OctoPrint-HelloWorld/archive/master.zip
 
 But let's add some more features instead.
 
